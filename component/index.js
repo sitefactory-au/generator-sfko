@@ -29,7 +29,6 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
     this.copy('view.html', this.dirname + this.filename + '.html');
     this.copy('viewmodel' + this.codeFileExtension, this.dirname + this.filename + this.codeFileExtension);
     if(this.usesTests) {
-       console.log('bkjkda')
        this.copy('viewmodel-test' + this.codeFileExtension, this.dirtest + this.filename + this.codeFileExtension);
     }
   },
@@ -59,7 +58,6 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
 
     var testFile = 'test/SpecRunner.browser' + this.codeFileExtension;
     readIfFileExists.call(this, testFile, function(existingContents) {
-      console.log(this.filename);
       var existingRegistrationRegex = new RegExp('\'components/' + this.filename + '/' + this.filename + '\',');
       if (existingRegistrationRegex.exec(existingContents)) {
         this.log(chalk.white(this.filename) + chalk.cyan(' is already registered in ') + chalk.white(testFile));
