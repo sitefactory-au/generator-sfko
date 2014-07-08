@@ -23,6 +23,7 @@ var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require
             'components/nav-bar/nav-bar',
             'components/home-page/home',
             'text!components/about-page/about.html'
+            // [Scaffolded component includes will be inserted here. To retain this feature, don't remove this comment.]
         ],
         insertRequire: ['app/startup'],
         bundles: {
@@ -61,7 +62,7 @@ gulp.task('js', <% if (usesTypeScript) { %>['ts'], <% } %>function () {
 <% if (!usesLess) { %>
 // Concatenates CSS files, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
 gulp.task('css',  function () {
-    var bowerCss = gulp.src('src/bower_modules/components-bootstrap/css/bootstrap.min.css')
+    var bowerCss = gulp.src(['src/bower_modules/components-bootstrap/css/bootstrap.min.css'])
             .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/')),
         appCss = gulp.src('src/css/*.css'),
         combinedCss = es.concat(bowerCss, appCss).pipe(concat('css.css')),

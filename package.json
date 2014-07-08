@@ -1,14 +1,14 @@
 {
-  "name": "generator-ko",
+  "name": "generator-sfko",
   "version": "0.2.0",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "SteveSanderson/generator-ko",
+  "repository": "sitefactory-au/generator-sfko",
   "author": {
-    "name": "Steven Sanderson",
+    "name": "SiteFactory",
     "email": "",
-    "url": "https://github.com/SteveSanderson"
+    "url": "http://www.sitefactory.com.au"
   },
   "engines": {
     "node": ">=0.10.0"

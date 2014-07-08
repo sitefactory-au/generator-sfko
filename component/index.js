@@ -50,9 +50,25 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
         fs.writeFile(startupFile, newContents);
         this.log(chalk.green('   registered ') + chalk.white(this.filename) + chalk.green(' in ') + chalk.white(startupFile));
 
-        if (fs.existsSync('gulpfile.js')) {
-            this.log(chalk.magenta('To include in build output, reference ') + chalk.white('\'' + modulePath + '\'') + chalk.magenta(' in ') + chalk.white('gulpfile.js'));
-        }
+        // if (fs.existsSync('gulpfile.js')) {
+        //     this.log(chalk.magenta('To include in build output, reference ') + chalk.white('\'' + modulePath + '\'') + chalk.magenta(' in ') + chalk.white('gulpfile.js'));
+        // }
+    });
+
+    readIfFileExists.call(this, 'gulpfile.js', function(existingContents) {
+        // var existingRegistrationRegex = new RegExp('\\bko\\.components\\.register\\(\s*[\'"]' + this.filename + '[\'"]');
+        // if (existingRegistrationRegex.exec(existingContents)) {
+        //     this.log(chalk.white(this.filename) + chalk.cyan(' is already registered in ') + chalk.white(startupFile));
+        //     return;
+        // }
+
+        var token = '// [Scaffolded component includes will be inserted here. To retain this feature, don\'t remove this comment.]',
+            regex = new RegExp('^(\\s*)(' + token.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + ')', 'm'),
+            modulePath = 'components/' + this.filename + '/' + this.filename,
+            lineToAdd = '\'' + modulePath + '\',',
+            newContents = existingContents.replace(regex, '$1' + lineToAdd + '\n$&');
+            fs.writeFile('gulpfile.js', newContents);
+            this.log(chalk.green('   included ') + chalk.white(this.filename) + chalk.green(' in ') + chalk.white('gulpfile.js'));
     });
 
 

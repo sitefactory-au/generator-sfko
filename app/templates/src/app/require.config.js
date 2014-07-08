@@ -9,7 +9,8 @@ var require = {
         "knockout":             "bower_modules/knockout/dist/knockout",
         "knockout-projections": "bower_modules/knockout-projections/dist/knockout-projections",
         "signals":              "bower_modules/js-signals/dist/signals.min",
-        "text":                 "bower_modules/requirejs-text/text"
+        "text":                 "bower_modules/requirejs-text/text",
+        // [Scaffolded model and module paths will be inserted here. To retain this feature, don't remove this comment.]
     },
     shim: {
         "bootstrap": { deps: ["jquery"] }
