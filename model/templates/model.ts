@@ -1,6 +1,6 @@
 import ko = require("knockout");
 
-export class <%= modelClassName %> {
+class <%= modelClassName %> {
 
 	public id;
     public name;
@@ -15,3 +15,5 @@ export class <%= modelClassName %> {
         // for example cancelling setTimeouts or disposing Knockout subscriptions/computeds.        
     }
 }
+export = Test;
+

@@ -14,4 +14,5 @@ class <%= moduleClassName %> {
     }
 }
 
-export var module = new <%= moduleClassName %>();
+var module:any = new <%= moduleClassName %>();
+export = module;
