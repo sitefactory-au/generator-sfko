@@ -3,7 +3,11 @@ var fs = require('fs'), vm = require('vm'), merge = require('deeply'), chalk = r
 
 // Gulp and plugins
 var gulp = require('gulp'), rjs = require('gulp-requirejs-bundler'), concat = require('gulp-concat'), clean = require('gulp-clean'),
-    replace = require('gulp-replace'), uglify = require('gulp-uglify'), htmlreplace = require('gulp-html-replace')<% if(usesTypeScript) { %>, typescript = require('gulp-tsc')<% } %>;
+    replace = require('gulp-replace'), uglify = require('gulp-uglify'), htmlreplace = require('gulp-html-replace')<% if(usesTypeScript) { %>, typescript = require('gulp-tsc')<% } %><% if(usesLess) { %>, less = require('gulp-less')<% } %>;
+var minifycss = require('gulp-minify-css');
+var rename = require("gulp-rename");
+
+
 
 // Config
 var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require.config.js') + '; require;');
@@ -40,15 +44,23 @@ gulp.task('ts', function() {
         .pipe(gulp.dest('./'));
 });
 <% } %>
+<% if (usesLess) { %>
+// Compile all .less files, producing .css
+gulp.task('less', function () {
+    return gulp.src('./src/less/styles.less')
+    .pipe(less())
+    .pipe(gulp.dest('./src/css'));
+});
+<% } %>
 // Discovers all AMD dependencies, concatenates together all required .js files, minifies them
 gulp.task('js', <% if (usesTypeScript) { %>['ts'], <% } %>function () {
     return rjs(requireJsOptimizerConfig)
         .pipe(uglify({ preserveComments: 'some' }))
         .pipe(gulp.dest('./dist/'));
 });
-
+<% if (!usesLess) { %>
 // Concatenates CSS files, rewrites relative paths to Bootstrap fonts, copies Bootstrap fonts
-gulp.task('css', function () {
+gulp.task('css',  function () {
     var bowerCss = gulp.src('src/bower_modules/components-bootstrap/css/bootstrap.min.css')
             .pipe(replace(/url\((')?\.\.\/fonts\//g, 'url($1fonts/')),
         appCss = gulp.src('src/css/*.css'),
@@ -57,7 +69,14 @@ gulp.task('css', function () {
     return es.concat(combinedCss, fontFiles)
         .pipe(gulp.dest('./dist/'));
 });
-
+<% } else { %>
+gulp.task('css', ['less'], function () {
+    return gulp.src('src/css/*.css')
+        .pipe(minifycss())
+        .pipe(rename('css.css'))
+        .pipe(gulp.dest('./dist/'));
+});
+<% } %>
 // Copies index.html, replacing <script> and <link> tags to reference production URLs
 gulp.task('html', function() {
     return gulp.src('./src/index.html')
@@ -85,7 +104,9 @@ gulp.task('clean', function() {
     return es.merge(distContents, generatedJs).pipe(clean());
 });
 <% } %>
-gulp.task('default', ['html', 'js', 'css'], function(callback) {
+
+
+gulp.task('default', ['html', 'js',  'css' ], function(callback) {
     callback();
     console.log('\nPlaced optimized files in ' + chalk.magenta('dist/\n'));
 });

@@ -6,7 +6,9 @@ var chalk = require('chalk');
 
 var languageChoice = {
   js: 'JavaScript',
-  ts: 'TypeScript'
+  ts: 'TypeScript',
+  css: 'CSS',
+  less: 'Less'
 };
 
 var KoGenerator = yeoman.generators.Base.extend({
@@ -60,6 +62,11 @@ var KoGenerator = yeoman.generators.Base.extend({
       message: 'What language do you want to use?',
       choices: [languageChoice.js, languageChoice.ts]
     }, {
+        type: 'list',
+        name: 'styleLanguage',
+        message: 'What language do you want to use for the style?',
+        choices: [languageChoice.css, languageChoice.less]
+    }, {
       type: 'confirm',
       name: 'includeTests',
       message: 'Do you want to include automated tests, using Jasmine and Karma?',
@@ -70,13 +77,16 @@ var KoGenerator = yeoman.generators.Base.extend({
       this.longName = props.name;
       this.slugName = this._.slugify(this.longName);
       this.usesTypeScript = props.codeLanguage === languageChoice.ts;
+      this.usesLess = props.styleLanguage === languageChoice.less;
       this.includeTests = props.includeTests;
       done();
     }.bind(this));
   },
 
   templating: function () {
-    var excludeExtension = this.usesTypeScript ? '.js' : '.ts';
+    var excludeExtension = [];
+    this.usesTypeScript ? excludeExtension.push('.js') : excludeExtension.push('.ts');
+    this.usesLess ? excludeExtension.push('.css') : excludeExtension.push('.less');
     this._processDirectory('src', 'src', excludeExtension);
     this.template('_package.json', 'package.json');
     this.template('_bower.json', 'bower.json');
@@ -105,7 +115,7 @@ var KoGenerator = yeoman.generators.Base.extend({
   _processDirectory: function(source, destination, excludeExtension) {
     var root = this.isPathAbsolute(source) ? source : path.join(this.sourceRoot(), source);
     var files = this.expandFiles('**', { dot: true, cwd: root }).filter(function(filename) {
-      return !excludeExtension || path.extname(filename) !== excludeExtension;
+      return !excludeExtension || excludeExtension.indexOf(path.extname(filename)) === -1;
     });
 
     for (var i = 0; i < files.length; i++) {
