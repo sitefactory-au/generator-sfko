@@ -12,12 +12,13 @@ import crossroads = require("crossroads");
 import hasher = require("hasher");
 export = router;
 
-module router {    
+module router {
     export var currentRoute = ko.observable<any>({});
 
     var allRoutes = [
-        { url: '',          params: { page: 'home' } },
-        { url: 'about',     params: { page: 'about' } }
+        { url: '',          params: { page: 'home-page' } },
+        { url: 'about',     params: { page: 'about-page' } },
+        // [Scaffolded routes will be inserted here. To retain this feature, don't remove this comment.]
     ];
 
     // Register routes with crossroads.js

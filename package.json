@@ -1,6 +1,6 @@
 {
   "name": "generator-sfko",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
@@ -19,8 +19,9 @@
   "files": [
     "app",
     "component",
-	"model",
-	"module"
+  	"model",
+  	"module",
+    "page"
   ],
   "keywords": [
     "yeoman-generator"
