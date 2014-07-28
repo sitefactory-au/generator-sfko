@@ -8,8 +8,10 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
 
   detectCodeLanguage: function() {
     this.usesTypeScript = fs.existsSync('src/app/startup.ts');
+    this.usesLess = fs.existsSync('src/less/styles.less');
     this.usesTests = fs.existsSync('test/index.html');
     this.codeFileExtension = this.usesTypeScript ? '.ts' : '.js';
+    this.styleExtension = this.usesLess ? '.less' : '.css';
   },
 
   init: function () {
@@ -31,6 +33,10 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
     if(this.usesTests) {
        this.copy('viewmodel-test' + this.codeFileExtension, this.dirtest + this.filename + this.codeFileExtension);
     }
+  },
+  
+  styles: function () {
+    this.copy('styles' + this.styleExtension, this.dirname + this.filename + this.styleExtension);
   },
 
   addComponentRegistration: function() {
@@ -71,6 +77,15 @@ var ComponentGenerator = yeoman.generators.NamedBase.extend({
             this.log(chalk.green('   included ') + chalk.white(this.filename) + chalk.green(' in ') + chalk.white('gulpfile.js'));
     });
 
+	readIfFileExists.call(this, 'src/less/components.less', function(existingContents) {
+        var token = '// [Scaffolded component less files will be inserted here. To retain this feature, don\'t remove this comment.]',
+            regex = new RegExp('^(\\s*)(' + token.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') + ')', 'm'),
+            modulePath = 'components/' + this.filename + '/' + this.filename + '.less',
+			lineToAdd = '@import "../' + modulePath + '";',
+            newContents = existingContents.replace(regex, '$1' + lineToAdd + '\n$&');
+            fs.writeFile('src/less/components.less', newContents);
+            this.log(chalk.green('   included ') + chalk.white(this.filename) + chalk.green(' in ') + chalk.white('components.less'));
+    });
 
     var testFile = 'test/SpecRunner.browser' + this.codeFileExtension;
     readIfFileExists.call(this, testFile, function(existingContents) {
