@@ -6,7 +6,7 @@ var gulp = require('gulp'), rjs = require('gulp-requirejs-bundler'), concat = re
     replace = require('gulp-replace'), uglify = require('gulp-uglify'), htmlreplace = require('gulp-html-replace')<% if(usesTypeScript) { %>, typescript = require('gulp-tsc')<% } %><% if(usesLess) { %>, less = require('gulp-less')<% } %>;
 var minifycss = require('gulp-minify-css');
 var rename = require("gulp-rename");
-
+var revall = require("gulp-rev-all");
 
 
 // Config
@@ -21,8 +21,8 @@ var requireJsRuntimeConfig = vm.runInNewContext(fs.readFileSync('src/app/require
         include: [
             'requireLib',
             'components/nav-bar/nav-bar',
-            'components/home-page/home',
-            'text!components/about-page/about.html'
+            'components/home-page/home-page',
+            'text!components/about-page/about-page.html',
             // [Scaffolded component includes will be inserted here. To retain this feature, don't remove this comment.]
         ],
         insertRequire: ['app/startup'],
@@ -49,8 +49,12 @@ gulp.task('ts', function() {
 // Compile all .less files, producing .css
 gulp.task('less', function () {
     return gulp.src('./src/less/styles.less')
-    .pipe(less())
-    .pipe(gulp.dest('./src/css'));
+        .pipe(replace('url(../images/', 'url(images/'))
+        .pipe(less())
+        .pipe(replace("../../", ""))
+        .pipe(minifycss())
+        .pipe(rename('css.css'))
+        .pipe(gulp.dest('./dist/'));
 });
 <% } %>
 // Discovers all AMD dependencies, concatenates together all required .js files, minifies them
@@ -70,13 +74,6 @@ gulp.task('css',  function () {
     return es.concat(combinedCss, fontFiles)
         .pipe(gulp.dest('./dist/'));
 });
-<% } else { %>
-gulp.task('css', ['less'], function () {
-    return gulp.src('src/css/*.css')
-        .pipe(minifycss())
-        .pipe(rename('css.css'))
-        .pipe(gulp.dest('./dist/'));
-});
 <% } %>
 // Copies index.html, replacing <script> and <link> tags to reference production URLs
 gulp.task('html', function() {
@@ -88,9 +85,9 @@ gulp.task('html', function() {
         .pipe(gulp.dest('./dist/'));
 });
 <% if (!usesTypeScript) { %>
-// Removes all files from ./dist/
+// Removes all files from ./dist & ./final
 gulp.task('clean', function() {
-    return gulp.src('./dist/**/*', { read: false })
+    return gulp.src(['./dist','./final'], { read: false })
         .pipe(clean());
 });
 <% } else { %>
@@ -102,12 +99,25 @@ gulp.task('clean', function() {
                 // Include only the .js/.js.map files that correspond to a .ts file
                 return fs.existsSync(data.path.replace(/\.js(\.map)?$/, '.ts')) ? data : undefined;
             }));
-    return es.merge(distContents, generatedJs).pipe(clean());
+	var finalContents = gulp.src('./final', {read:false});
+    return es.merge(distContents, generatedJs, finalContents).pipe(clean());
 });
 <% } %>
 
+// Copy all static images
+gulp.task('images', function() {
+  return gulp.src('./src/images/**/*.*')
+    .pipe(gulp.dest('./dist/images'));
+});
 
-gulp.task('default', ['html', 'js',  'css' ], function(callback) {
+<% if (!usesLess) { %>
+gulp.task('default', ['images', 'html', 'js',  'css' ], function(callback) {
+<% } else { %>
+gulp.task('default', ['images', 'html', 'js',  'less' ], function(callback) {
+<% } %>
+    gulp.src('dist/**')
+      .pipe(revall({ ignore: [/^\/favicon.ico$/g, '.html'] }))
+      .pipe(gulp.dest('./final'));
     callback();
     console.log('\nPlaced optimized files in ' + chalk.magenta('dist/\n'));
 });

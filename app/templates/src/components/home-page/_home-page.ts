@@ -1,6 +1,6 @@
-/// <amd-dependency path="text!./home.html" />
+/// <amd-dependency path="text!./home-page.html" />
 import ko = require("knockout");
-export var template: string = require("text!./home.html");
+export var template: string = require("text!./home-page.html");
 
 export class viewModel {
     public message = ko.observable("Welcome to <%= longName.replace('"', '\\"') %>!");

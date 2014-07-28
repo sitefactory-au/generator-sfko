@@ -9,6 +9,7 @@
     "requirejs": "~2.1.14",
     "requirejs-text": "~2.0.12",
     "knockout": "~3.2.0-beta",
-    "knockout-projections": "~1.1.0-pre"
+    "knockout-projections": "~1.1.0-pre",
+    "knockout.punches": "~0.3.1"
   }
 }
